@@ -1,1 +1,19 @@
+body {
+	height: 100%;
+	background-color: beige;
+	text-align: center;
+}
 
+.navbar {
+	display: block;
+	align-content: center;
+	text-align: center;
+	margin: auto;
+}
+
+#stageDisplay {
+	background: cadetblue;
+}
+
+@media (max-width: 709px) {
+}
