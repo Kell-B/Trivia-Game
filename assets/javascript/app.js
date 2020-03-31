@@ -131,6 +131,13 @@ $(document).ready(function() {
 	var rightGif = 'assets/images/goodjobgif.gif';
 	var wrongGif = 'assets/images/wronggif.gif';
 
+	//audio variables
+	var wrongSound = new Audio('assets/audio/priceiswrong.mp3');
+	var rightSound = new Audio('assets/audio/tpir-dings.mp3');
+	var startSound = new Audio('assets/audio/NameDiallerStartTone.wav');
+	var clockSound = new Audio('assets/audio/tic_tac_reveil.wav');
+	clockSound.loop = true;
+
 	// =============================================================================
 	// ==========================================================================
 	// =======================================================================
