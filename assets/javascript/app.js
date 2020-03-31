@@ -18,8 +18,9 @@ $(document).ready(function() {
 	};
 
 	var question2 = {
-		quest   : 'Where were the Declaration of Independence, the Constitution, and the Bill of Rights stored during World War II?',
-		answer1 : 'Fort Know',
+		quest   :
+			'Where were the Declaration of Independence, the Constitution, and the Bill of Rights stored during World War II?',
+		answer1 : 'Fort Knox',
 		answer2 : 'The White House',
 		answer3 : 'Camp David',
 		answer4 : 'Fort Ticonderoga',
@@ -122,54 +123,253 @@ $(document).ready(function() {
 	var intervalId;
 	var countNum = 0;
 
+	// prevents the clock from being sped up unnecessarily
+	var clockRunning = false;
+	var time = 25;
+
 	// img/gif variable to display for right/wrong answers
-	var rightGif = '';
-	var wrongGif = '';
+	var rightGif = 'assets/images/goodjobgif.gif';
+	var wrongGif = 'assets/images/wronggif.gif';
+
+	// =============================================================================
+	// ==========================================================================
+	// =======================================================================
+	// Game functions
+	// =======================================================================
+	// ==========================================================================
+	// =============================================================================
 
 	// Start Game Function
+	function Game() {
+		startStage();
+	}
+	//starts game
+	Game();
+
 	// Create an on click to start the game
 	// Set up start stage
 	// Remove any text/html from previous game
+	function startStage() {
+		var ID = 'startStage';
+		report(ID);
+		$('#stageDisplay').empty();
+		$('#display').text('Time remaining: ' + time + ' seconds');
+		$('#stageDisplay').append('<h1> Click me to start </h1>');
+		$('#stageDisplay h1').attr('id', 'clickMe');
+		//adds event listener for user to start the game
+		$('#clickMe').on('click', function() {
+			$('#stageDisplay').empty();
+			start();
+			triviaGame(currentArray);
+		});
+	}
 
 	// Timer/Clock running and timer display Functions
-    // Start Timer
-    function start() {
-        if () {
-         
-        }
-       }
-    // Stop Timer
-    function stop() {
-        if () {
-         
-        }
-       }
-    // Timer Counter
-    function count() {
-        if () {
-         
-        }
-       }
-    // Display and convert Timer correctly
-    function timeConverter() {
-        if () {
-         
-        }
-       }
+	function report(section) {
+		var divider = '------------------------------------';
+		console.log(' ');
+		console.log(divider);
+		console.log('running ', section);
+		console.log(divider);
+	}
+
+	// Start Timer
+	function start() {
+		if (!clockRunning) {
+			$('#display').text('Time remaining: ' + time + ' seconds');
+			intervalId = setInterval(count, 1000);
+			clockRunning = true;
+		}
+	}
+
+	// Stop Timer
+	function stop() {
+		clearInterval(intervalId);
+		clockRunning = false;
+		time = 25;
+	}
+
+	// Timer Counter
+	function count() {
+		time--;
+		var converted = timeConverter(time);
+		$('#display').text('Time remaining: ' + converted + ' seconds');
+	}
+
+	// Display and convert Timer correctly
+	function timeConverter(t) {
+		var minutes = Math.floor(t / 60);
+		var seconds = t - minutes * 60;
+
+		if (seconds < 10) {
+			seconds = '0' + seconds;
+		}
+		return seconds;
+	}
 
 	// Right/Wrong answers and out of time display Functions
+	function triviaGame() {
+		var ID = 'triviaGame';
+		report(ID);
+		//if clock is running
+		if (clockRunning) {
+			//push question into dummy array
+			currentArray.push(triviaArray[countNum]);
+			//update stage with current question
+			setStage(currentArray);
+			//event listener added to choices given
+			$('h3').on('click', function() {
+				//sends ID of h3 clicked on to answer function
+				answerCheck(this.id);
+				//removes event listener to prevent clicking on other answers
+				$('h3').off();
+			});
+		}
+	}
+
+	// animate.css function
+	function animateCSS(element, animationName, callback) {
+		const node = document.querySelector(element);
+		node.classList.add('animated', animationName);
+
+		function handleAnimationEnd() {
+			node.classList.remove('animated', animationName);
+			node.removeEventListener('animationend', handleAnimationEnd);
+
+			if (typeof callback === 'function') callback();
+		}
+
+		node.addEventListener('animationend', handleAnimationEnd);
+	}
+
 	// If answer is right
+	function rightAnswer() {
+		right++;
+		var giphy = $('<img>');
+		giphy.addClass('img-fluid');
+		giphy.attr('src', rightGif);
+		giphy.attr('height', '400');
+		giphy.attr('animation-duration', '3s');
+		$('#stageDisplay').append(giphy);
+	}
+
 	// If answer is wrong
+	function wrongAnswer() {
+		var newTarget = '#' + currentArray[countNum].correct;
+		animateCSS(newTarget, 'wobble');
+		var giphy = $('<img>');
+		giphy.addClass('img-fluid');
+		giphy.attr('height', '400');
+		giphy.attr('src', wrongGif);
+		giphy.attr('animation-duration', '3s');
+		$('#stageDisplay').append(giphy);
+		wrong++;
+	}
+
 	// If player runs out of time
+	function outOFtime() {
+		var newTarget = '#' + currentArray[countNum].correct;
+		animateCSS(newTarget, 'wobble');
+		var giphy = $('<img>');
+		giphy.addClass('img-fluid');
+		giphy.attr('height', '400');
+		giphy.attr('src', wrongGif);
+		giphy.attr('animation-duration', '3s');
+		$('#stageDisplay').append(giphy);
+		unanswered++;
+	}
+
 	// Check if right answer was clicked
-	// Moves to next question
-	// When there are no more questions
+	function answerCheck(ID) {
+		console.log('clicked on', ID);
+		//  checks id of clicked on versus the correct answer for the question
+		if (ID == currentArray[countNum].correct && time > 0) {
+			rightAnswer(currentArray[countNum].correct);
+		} else if (time > 0) {
+			wrongAnswer(currentArray[countNum].correct);
+		}
+
+		// Moves to next question
+		// When there are no more questions
+		//question counter is incremented
+		countNum++;
+		//removes event listener
+		$('h3').off();
+		console.log(countNum);
+		//if question counter is still less that array
+		if (countNum < triviaArray.length) {
+			console.log('passed through');
+			stop();
+			setTimeout(function() {
+				start();
+				triviaGame();
+			}, 5000);
+		} else {
+			// else, there are no questions left.
+			stop();
+			endStage();
+		}
+	}
 
 	// Display current Question Function
 	// Update the stage with question and answer choices
+	function setStage(current) {
+		var ID = 'setStage';
+		report(ID);
+
+		$('#stageDisplay').children().remove();
+		var newDiv = $('<div>');
+		var quest1 = $('<h1>');
+		quest1.attr('id', 'question');
+		quest1.text(current[countNum].quest);
+		newDiv.append(quest1);
+		newDiv.append('<hr>');
+		var ans1 = $('<h3>');
+		ans1.attr('id', 'answer1');
+		ans1.text(current[countNum].answer1);
+		newDiv.append(ans1);
+		var ans2 = $('<h3>');
+		ans2.attr('id', 'answer2');
+		ans2.text(current[countNum].answer2);
+		newDiv.append(ans2);
+		var ans3 = $('<h3>');
+		ans3.attr('id', 'answer3');
+		ans3.text(current[countNum].answer3);
+		newDiv.append(ans3);
+		var ans4 = $('<h3>');
+		ans4.attr('id', 'answer4');
+		ans4.text(current[countNum].answer4);
+		newDiv.append(ans4);
+		$('#stageDisplay').html(newDiv);
+	}
 
 	// Update end stage screen with right wrong and unanswered questions Function
-
 	// Restart the game Function
 	// Create an on click that gets displayed when game is over
+	function endStage() {
+		$('#stageDisplay').empty();
+		var hOne = $('<h1>');
+		hOne.text('Correct: ' + right);
+		$('#stageDisplay').append(hOne);
+		var hTwo = $('<h1>');
+		hTwo.text('Wrong: ' + wrong);
+		$('#stageDisplay').append(hTwo);
+		var hThree = $('<h1>');
+		var unAnswered1 = unanswered + (triviaArray.length - wrong - right);
+		hThree.text('Unanswered: ' + unAnswered1);
+		$('#stageDisplay').append(hThree);
+		var hFour = $('<h1>');
+		hFour.attr('id', 'startOver');
+		hFour.text('Start Over?');
+		$('#stageDisplay').append(hFour);
+		//this event restarts the game when clicked on
+		$('#startOver').on('click', function() {
+			currentArray = [];
+			time = 25;
+			countNum = 0;
+			$('#stageDisplay').empty();
+			$('#display').text('Time remaining: ' + time + ' seconds');
+			startStage();
+		});
+	}
 });

@@ -15,5 +15,20 @@ body {
 	background: cadetblue;
 }
 
+#stageOver {
+	margin-top: 5px;
+}
+
+h3:hover,
+#startOver {
+	border: 2px solid #f26841;
+	background: #1d1b40;
+	margin: 10px auto;
+}
+
+.text-responsive {
+	font-size: calc(100% + 1vw + 1vh);
+}
+
 @media (max-width: 709px) {
 }
