@@ -1,7 +1,9 @@
 body {
 	height: 100%;
-	background-color: beige;
+	background-color: #2274a5;
 	text-align: center;
+	color: white;
+	font-family: 'Righteous', cursive;
 }
 
 .navbar {
@@ -12,7 +14,7 @@ body {
 }
 
 #stageDisplay {
-	background: cadetblue;
+	background: #00cc66;
 }
 
 #stageOver {
@@ -21,9 +23,10 @@ body {
 
 h3:hover,
 #startOver {
-	border: 2px solid #f26841;
-	background: #1d1b40;
+	border: 2px solid #f75c03;
+	background: #f1c40f;
 	margin: 10px auto;
+	color: #d90368;
 }
 
 .text-responsive {
