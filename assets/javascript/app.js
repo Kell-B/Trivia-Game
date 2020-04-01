@@ -130,6 +130,7 @@ $(document).ready(function() {
 	// img/gif variable to display for right/wrong answers
 	var rightGif = 'assets/images/goodjobgif.gif';
 	var wrongGif = 'assets/images/wronggif.gif';
+	var giphy = $('<img>');
 
 	//audio variables
 	var wrongSound = new Audio('assets/audio/priceiswrong.mp3');
@@ -160,6 +161,9 @@ $(document).ready(function() {
 		var ID = 'startStage';
 		report(ID);
 		$('#stageDisplay').empty();
+		setTimeout(function() {
+			startSound.play();
+		}, 500);
 		$('#display').text('Time remaining: ' + time + ' seconds');
 		$('#stageDisplay').append('<h1> Click me to start </h1>');
 		$('#stageDisplay h1').attr('id', 'clickMe');
@@ -186,6 +190,7 @@ $(document).ready(function() {
 			$('#display').text('Time remaining: ' + time + ' seconds');
 			intervalId = setInterval(count, 1000);
 			clockRunning = true;
+			clockSound.play();
 		}
 	}
 
@@ -194,6 +199,7 @@ $(document).ready(function() {
 		clearInterval(intervalId);
 		clockRunning = false;
 		time = 25;
+		clockSound.pause();
 	}
 
 	// Timer Counter
@@ -201,6 +207,9 @@ $(document).ready(function() {
 		time--;
 		var converted = timeConverter(time);
 		$('#display').text('Time remaining: ' + converted + ' seconds');
+		if (time <= 0) {
+			outOFtime();
+		}
 	}
 
 	// Display and convert Timer correctly
@@ -251,8 +260,9 @@ $(document).ready(function() {
 
 	// If answer is right
 	function rightAnswer() {
+		rightSound.play();
 		right++;
-		var giphy = $('<img>');
+
 		giphy.addClass('img-fluid');
 		giphy.attr('src', rightGif);
 		giphy.attr('height', '400');
@@ -264,26 +274,32 @@ $(document).ready(function() {
 	function wrongAnswer() {
 		var newTarget = '#' + currentArray[countNum].correct;
 		animateCSS(newTarget, 'wobble');
-		var giphy = $('<img>');
+		// var giphy = $('<img>');
 		giphy.addClass('img-fluid');
 		giphy.attr('height', '400');
 		giphy.attr('src', wrongGif);
 		giphy.attr('animation-duration', '3s');
 		$('#stageDisplay').append(giphy);
+		wrongSound.play();
 		wrong++;
 	}
 
 	// If player runs out of time
 	function outOFtime() {
+		console.log('function is working');
 		var newTarget = '#' + currentArray[countNum].correct;
 		animateCSS(newTarget, 'wobble');
-		var giphy = $('<img>');
+		// var giphy = $('<img>');
 		giphy.addClass('img-fluid');
 		giphy.attr('height', '400');
 		giphy.attr('src', wrongGif);
 		giphy.attr('animation-duration', '3s');
 		$('#stageDisplay').append(giphy);
+		wrongSound.play();
 		unanswered++;
+		// stop();
+		answerCheck('timeout');
+		console.log(unanswered);
 	}
 
 	// Check if right answer was clicked
@@ -294,6 +310,8 @@ $(document).ready(function() {
 			rightAnswer(currentArray[countNum].correct);
 		} else if (time > 0) {
 			wrongAnswer(currentArray[countNum].correct);
+		} else if (ID == 'timeout') {
+			console.log('timedata');
 		}
 
 		// Moves to next question
@@ -369,6 +387,7 @@ $(document).ready(function() {
 		hFour.attr('id', 'startOver');
 		hFour.text('Start Over?');
 		$('#stageDisplay').append(hFour);
+		animateCSS('#startOver', 'tada');
 		//this event restarts the game when clicked on
 		$('#startOver').on('click', function() {
 			currentArray = [];
